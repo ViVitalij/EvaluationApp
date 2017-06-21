@@ -22,7 +22,7 @@ public class PersonContentProvider extends ContentProvider {
 
     private static final int PERSON_ID = 20;
 
-    private static final String AUTHORITY = "com.losK.evaluation.contentprovider";
+    private static final String AUTHORITY = "com.losK.evaluationapp.contentprovider";
 
     private static final String BASE_PATH = Person.TABLE;
 
