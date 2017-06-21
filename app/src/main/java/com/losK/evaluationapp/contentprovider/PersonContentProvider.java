@@ -129,7 +129,7 @@ public class PersonContentProvider extends ContentProvider {
                       @Nullable String[] selectionArgs) {
         int uriType = uriMatcher.match(uri);
         SQLiteDatabase sqlDB = databaseHelper.getWritableDatabase();
-        int rowsUpdated = 0;
+        int rowsUpdated;
         switch (uriType) {
             case PEOPLE:
                 rowsUpdated = sqlDB.update(Person.TABLE,
