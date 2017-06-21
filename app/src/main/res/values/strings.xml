@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">EvaluationApp</string>
     <string name="empty">Empty!</string>
+    <string name="tag">TAG</string>
+    <string name="permissions_needed">PERMISSIONS NEEDED</string>
+    <string name="delete">Delete</string>
 </resources>

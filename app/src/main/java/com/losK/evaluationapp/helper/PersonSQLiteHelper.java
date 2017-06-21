@@ -10,12 +10,9 @@ import static com.losK.evaluationapp.model.Person.PHONE;
 import static com.losK.evaluationapp.model.Person.RATING;
 import static com.losK.evaluationapp.model.Person.TABLE;
 
-/**
- * Created by m.losK on 2017-06-21.
- */
-
 public class PersonSQLiteHelper extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME = "commments.db";
+
+    private static final String DATABASE_NAME = "evaluation.db";
 
     private static final int DATABASE_VERSION = 4;
 
@@ -28,7 +25,7 @@ public class PersonSQLiteHelper extends SQLiteOpenHelper {
                     + PHONE + " text not null"
                     + ");";
 
-    public static final String DATABASE_DROP = "DROP TABLE IF EXISTS " + TABLE;
+    private static final String DATABASE_DROP = "DROP TABLE IF EXISTS " + TABLE;
 
     public PersonSQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -40,7 +37,7 @@ public class PersonSQLiteHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int j) {
         sqLiteDatabase.execSQL(DATABASE_DROP);
         onCreate(sqLiteDatabase);
     }

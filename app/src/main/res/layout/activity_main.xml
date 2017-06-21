@@ -8,7 +8,6 @@
     tools:context="com.losK.evaluationapp.MainActivity">
 
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
@@ -26,34 +25,33 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="15dp"
-                    android:gravity="center"
-                    android:text="@string/app_name"
-                    android:textSize="20dp" />
-
                 <Button
-                    android:id="@+id/importContact"
+                    android:id="@+id/import_contact_button"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginRight="10dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="10dp"
                     android:background="@drawable/account_plus" />
 
                 <Button
-                    android:id="@+id/importAllContacts"
+                    android:id="@+id/import_all_contacts_button"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_toLeftOf="@id/importContact"
+                    android:layout_marginEnd="10dp"
+                    android:layout_toStartOf="@id/import_contact_button"
                     android:background="@drawable/account_multiple_plus" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="15dp"
+                    android:gravity="center"
+                    android:text="@string/app_name"
+                    android:layout_toStartOf="@id/import_all_contacts_button"
+                    android:textSize="20sp" />
+
             </RelativeLayout>
-
         </android.support.v7.widget.Toolbar>
-
     </android.support.design.widget.AppBarLayout>
 
     <RelativeLayout
@@ -62,24 +60,21 @@
         android:layout_height="match_parent"
         android:orientation="horizontal">
 
-
         <ListView
             android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
         <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/emptyListView"
+            android:id="@+id/empty_list_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:paddingBottom="40dp"
             android:text="@string/empty"
-            android:textSize="25dp"
+            android:textSize="25sp"
             android:textStyle="bold"
             android:visibility="gone" />
 
-
     </RelativeLayout>
-
 </LinearLayout>
