@@ -1,7 +1,6 @@
 package com.losK.evaluationapp.contentprovider;
 
 import android.content.ContentProvider;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -16,27 +15,25 @@ import com.losK.evaluationapp.helper.PersonSQLiteHelper;
 import com.losK.evaluationapp.model.Person;
 
 public class PersonContentProvider extends ContentProvider {
+
     private PersonSQLiteHelper databaseHelper;
 
     private static final int PEOPLE = 10;
+
     private static final int PERSON_ID = 20;
 
-    private static final String AUTHORITY = "com.example.rc.samples.contentprovider";
+    private static final String AUTHORITY = "com.losK.evaluation.contentprovider";
 
     private static final String BASE_PATH = Person.TABLE;
+
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + BASE_PATH);
 
-    public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE
-            + "/" + Person.TABLE;
-    public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE
-            + "/person";
-
-    private static final UriMatcher sURIMatcher = new UriMatcher(
+    private static final UriMatcher uriMatcher = new UriMatcher(
             UriMatcher.NO_MATCH);
 
     static {
-        sURIMatcher.addURI(AUTHORITY, BASE_PATH, PEOPLE);
-        sURIMatcher.addURI(AUTHORITY, BASE_PATH + "/#", PERSON_ID);
+        uriMatcher.addURI(AUTHORITY, BASE_PATH, PEOPLE);
+        uriMatcher.addURI(AUTHORITY, BASE_PATH + "/#", PERSON_ID);
     }
 
     @Override
@@ -47,11 +44,12 @@ public class PersonContentProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
+                        @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         queryBuilder.setTables(Person.TABLE);
 
-        int uriType = sURIMatcher.match(uri);
+        int uriType = uriMatcher.match(uri);
         switch (uriType) {
             case PEOPLE:
                 break;
@@ -63,11 +61,10 @@ public class PersonContentProvider extends ContentProvider {
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
 
-        SQLiteDatabase db = databaseHelper.getWritableDatabase();
-        Cursor cursor = queryBuilder.query(db, projection, selection,
+        SQLiteDatabase sqLiteDatabase = databaseHelper.getWritableDatabase();
+        Cursor cursor = queryBuilder.query(sqLiteDatabase, projection, selection,
                 selectionArgs, null, null, sortOrder);
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
-
         return cursor;
     }
 
@@ -80,12 +77,12 @@ public class PersonContentProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        int uriType = sURIMatcher.match(uri);
-        SQLiteDatabase sqlDB = databaseHelper.getWritableDatabase();
-        long id = 0;
+        SQLiteDatabase sqLiteDatabase = databaseHelper.getWritableDatabase();
+        int uriType = uriMatcher.match(uri);
+        long id;
         switch (uriType) {
             case PEOPLE:
-                id = sqlDB.insert(Person.TABLE, null, values);
+                id = sqLiteDatabase.insert(Person.TABLE, null, values);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
@@ -95,10 +92,11 @@ public class PersonContentProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        int uriType = sURIMatcher.match(uri);
+    public int delete(@NonNull Uri uri, @Nullable String selection,
+                      @Nullable String[] selectionArgs) {
+        int uriType = uriMatcher.match(uri);
         SQLiteDatabase sqlDB = databaseHelper.getWritableDatabase();
-        int rowsDeleted = 0;
+        int rowsDeleted;
         switch (uriType) {
             case PEOPLE:
                 rowsDeleted = sqlDB.delete(Person.TABLE, selection,
@@ -127,8 +125,9 @@ public class PersonContentProvider extends ContentProvider {
     }
 
     @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        int uriType = sURIMatcher.match(uri);
+    public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection,
+                      @Nullable String[] selectionArgs) {
+        int uriType = uriMatcher.match(uri);
         SQLiteDatabase sqlDB = databaseHelper.getWritableDatabase();
         int rowsUpdated = 0;
         switch (uriType) {

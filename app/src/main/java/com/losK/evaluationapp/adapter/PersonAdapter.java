@@ -20,11 +20,11 @@ import butterknife.ButterKnife;
 
 public class PersonAdapter extends CursorAdapter {
 
-    @BindView(R.id.name)
-    protected TextView name;
+    @BindView(R.id.name_text_view)
+    protected TextView nameTextView;
 
-    @BindView(R.id.rating)
-    protected RatingBar rating;
+    @BindView(R.id.rating_bar)
+    protected RatingBar ratingBar;
 
     public PersonAdapter(Context context, Cursor c) {
         super(context, c, 0);
@@ -40,12 +40,12 @@ public class PersonAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, final Context context, final Cursor cursor) {
         ButterKnife.bind(this, view);
-        name.setText(cursor.getString(cursor.getColumnIndex(Person.NAME)));
-        rating.setRating((float) cursor.getDouble(cursor.getColumnIndex(Person.RATING)));
 
+        nameTextView.setText(cursor.getString(cursor.getColumnIndex(Person.NAME)));
         int id = cursor.getInt(cursor.getColumnIndex(Person.ID));
-        rating.setTag(id);
-        rating.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+        ratingBar.setRating((float) cursor.getDouble(cursor.getColumnIndex(Person.RATING)));
+        ratingBar.setTag(id);
+        ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean inNotInit) {
                 if (inNotInit) {

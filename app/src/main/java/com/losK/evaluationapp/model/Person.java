@@ -2,7 +2,6 @@ package com.losK.evaluationapp.model;
 
 import java.io.Serializable;
 
-//TODO Lombok
 public class Person implements Serializable {
 
     public static final String TABLE = "people";

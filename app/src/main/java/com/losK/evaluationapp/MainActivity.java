@@ -33,16 +33,18 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+public class MainActivity extends AppCompatActivity
+        implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    static final int PICK_CONTACT = 1;
-    private static final int READ_CONTACT_REQUEST = 333;
+    private static final int READ_CONTACT_REQUEST = 343;
+
+    private static final int PICK_CONTACT = 224;
 
     @BindView(R.id.toolbar)
     protected Toolbar toolbar;
 
-    @BindView(R.id.emptyListView)
-    protected View emptyView;
+    @BindView(R.id.empty_list_view)
+    protected View emptyListView;
 
     @BindView(R.id.list)
     protected ListView list;
@@ -53,31 +55,22 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setSupportActionBar(toolbar);
         ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
         initList();
     }
 
     private void initList() {
         getLoaderManager().initLoader(0, null, this);
-        list.setEmptyView(emptyView);
+        list.setEmptyView(emptyListView);
         adapter = new PersonAdapter(this, null);
         list.setAdapter(adapter);
         registerForContextMenu(list);
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.context_menu, menu);
@@ -85,7 +78,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        AdapterView.AdapterContextMenuInfo info =
+                (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()) {
             case R.id.delete:
                 long itemId = adapter.getItemId(info.position);
@@ -98,61 +92,67 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     }
 
-    @OnClick(R.id.importContact)
-    public void importContact() {
+    @OnClick(R.id.import_contact_button)
+    public void importContactClicked() {
         if (validatePermissions()) return;
         Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
         startActivityForResult(intent, PICK_CONTACT);
     }
 
     private boolean validatePermissions() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS}, READ_CONTACT_REQUEST);
-            Log.i("TAG", "PERMISSIONS NEEDED");
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS},
+                    READ_CONTACT_REQUEST);
+            Log.i(getString(R.string.tag), getString(R.string.permissions_needed));
             return true;
         }
         return false;
     }
 
-    @OnClick(R.id.importAllContacts)
-    public void importAllContacts() {
+    @OnClick(R.id.import_all_contacts_button)
+    public void importAllContactsClicked() {
         if (validatePermissions()) return;
 
-        ContentResolver cr = getContentResolver();
-        Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI,
+        ContentResolver contentResolver = getContentResolver();
+        Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
                 null, null, null, null);
 
-        if (cur.getCount() > 0) {
-            while (cur.moveToNext()) {
-                String id = cur.getString(
-                        cur.getColumnIndex(ContactsContract.Contacts._ID));
-                String name = cur.getString(cur.getColumnIndex(
+        if (cursor != null && cursor.getCount() > 0) {
+            while (cursor.moveToNext()) {
+                String contactId = cursor.getString(
+                        cursor.getColumnIndex(ContactsContract.Contacts._ID));
+                String name = cursor.getString(cursor.getColumnIndex(
                         ContactsContract.Contacts.DISPLAY_NAME));
 
-                if (cur.getInt(cur.getColumnIndex(
+                if (cursor.getInt(cursor.getColumnIndex(
                         ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
-                    Cursor pCur = cr.query(
+                    Cursor personCursor = contentResolver.query(
                             ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                             null,
                             ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                            new String[]{id}, null);
-                    while (pCur.moveToNext()) {
-                        String phoneNo = pCur.getString(pCur.getColumnIndex(
-                                ContactsContract.CommonDataKinds.Phone.NUMBER));
+                            new String[]{contactId}, null);
+                    if (personCursor != null) {
+                        while (personCursor.moveToNext()) {
+                            String phoneNo = personCursor.getString(personCursor.getColumnIndex(
+                                    ContactsContract.CommonDataKinds.Phone.NUMBER));
 
-                        ContentValues values = addPerson(name, phoneNo, 0.0);
+                            ContentValues values = addPerson(name, phoneNo, 0.0);
+                        }
+                        personCursor.close();
                     }
-                    pCur.close();
                 }
             }
+            cursor.close();
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == READ_CONTACT_REQUEST && grantResults[0] != -1) {
-            importContact();
+            importContactClicked();
         }
     }
 
@@ -165,24 +165,31 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 if (resultCode == Activity.RESULT_OK) {
 
                     Uri contactData = data.getData();
-                    Cursor c = getContentResolver().query(contactData, null, null, null, null);
-                    if (c.moveToFirst()) {
+                    Cursor cursor = getContentResolver().query(contactData, null, null, null, null);
+                    if (cursor != null && cursor.moveToFirst()) {
 
                         String number = "";
-                        String id = c.getString(c.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
+                        String id = cursor.getString(cursor.getColumnIndexOrThrow
+                                (ContactsContract.Contacts._ID));
 
-                        String hasPhone = c.getString(c.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
+                        String hasPhone = cursor.getString(cursor.getColumnIndex
+                                (ContactsContract.Contacts.HAS_PHONE_NUMBER));
 
                         if (hasPhone.equalsIgnoreCase("1")) {
                             Cursor phones = getContentResolver().query(
                                     ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
                                     ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + id,
                                     null, null);
-                            phones.moveToFirst();
-                            number = phones.getString(phones.getColumnIndex("data1"));
+                            if (phones != null) {
+                                phones.moveToFirst();
+                                number = phones.getString(phones.getColumnIndex("data1"));
+                                phones.close();
+                            }
                         }
-                        String name = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                        String name = cursor.getString(cursor.getColumnIndex
+                                (ContactsContract.Contacts.DISPLAY_NAME));
                         addPerson(name, number, 0.0);
+                        cursor.close();
                     }
                 }
                 break;
@@ -201,9 +208,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        CursorLoader cursorLoader = new CursorLoader(this, PersonContentProvider.CONTENT_URI,
+        return new CursorLoader(this, PersonContentProvider.CONTENT_URI,
                 null, null, null, null);
-        return cursorLoader;
     }
 
     @Override
@@ -214,6 +220,5 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         adapter.swapCursor(null);
-
     }
 }
