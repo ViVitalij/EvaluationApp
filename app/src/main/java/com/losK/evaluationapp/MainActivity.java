@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity
                             String phoneNo = personCursor.getString(personCursor.getColumnIndex(
                                     ContactsContract.CommonDataKinds.Phone.NUMBER));
 
-                            ContentValues values = addPerson(name, phoneNo, 0.0);
+                            addPerson(name, phoneNo, 0.0);
                         }
                         personCursor.close();
                     }
